@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Segmentation Loss Functions Overview</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #222;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    .equation {
+      font-family: "Courier New", monospace;
+      background: #fdfdfd;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Loss Functions for Image Segmentation</h1>
+
+<h2>Pixel-wise Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>Binary Cross Entropy</td><td>BCE</td><td>Pixel-wise error for binary segmentation</td><td>Tumor vs background classification</td><td>Yes/No quiz graded per answer</td><td>Minimize per-pixel classification error</td><td>Standard for binary segmentation</td></tr>
+  <tr class="equation"><td colspan="7">L = - (1/N) Σ [ y log(ŷ) + (1-y) log(1-ŷ) ]</td></tr>
+
+  <tr><td>Categorical Cross Entropy</td><td>CCE</td><td>Pixel-level classification for multi-class</td><td>City scene: road, car, sky</td><td>Multiple-choice exam graded per pixel</td><td>Penalize wrong class probability</td><td>Semantic segmentation baseline</td></tr>
+  <tr class="equation"><td colspan="7">L = - (1/N) Σ Σ y_c log(ŷ_c)</td></tr>
+
+  <tr><td>Weighted Cross Entropy</td><td>WCE</td><td>Cross entropy with class weights</td><td>Rare tumor pixels emphasized</td><td>Exam where rare questions count more</td><td>Penalize misclassification of minority class more</td><td>Imbalanced datasets</td></tr>
+  <tr class="equation"><td colspan="7">L = - Σ w_c y_c log(ŷ_c)</td></tr>
+</table>
+
+<h2>Overlap-based Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>Dice Loss</td><td>DL</td><td>1 - Dice overlap</td><td>Predicted tumor overlaps 70% with GT</td><td>Overlap of two circles</td><td>Maximize region overlap</td><td>Medical imaging with imbalance</td></tr>
+  <tr class="equation"><td colspan="7">L = 1 - (2 Σ y·ŷ) / (Σ y + Σ ŷ)</td></tr>
+
+  <tr><td>IoU Loss</td><td>Jaccard Loss</td><td>1 - IoU overlap</td><td>Predicted organ overlaps 75%</td><td>Venn diagram overlap ratio</td><td>Maximize intersection, penalize union mismatches</td><td>Direct IoU optimization</td></tr>
+  <tr class="equation"><td colspan="7">L = 1 - (Σ y·ŷ) / (Σ y + Σ ŷ - Σ y·ŷ)</td></tr>
+</table>
+
+<h2>Combined Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>BCE + Dice Loss</td><td>Hybrid</td><td>Sum of BCE and Dice</td><td>Tumor: pixel and overlap accuracy</td><td>Check answers individually and overall</td><td>Penalize both misclassified pixels and poor overlap</td><td>Medical segmentation pipelines</td></tr>
+  <tr class="equation"><td colspan="7">L = BCE + Dice</td></tr>
+
+  <tr><td>CE + IoU Loss</td><td>Hybrid</td><td>Sum of CE and IoU</td><td>Organs segmented by class and overlap</td><td>Judged by accuracy and consistency</td><td>Balance pixel correctness with region overlap</td><td>Multi-class tasks with imbalance</td></tr>
+  <tr class="equation"><td colspan="7">L = CE + IoU</td></tr>
+</table>
+
+<h2>Boundary-aware Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>Boundary Loss</td><td>BL</td><td>Distance-based boundary error</td><td>Thin blood vessel segmentation</td><td>Tracing outlines carefully</td><td>Minimize distance from predicted to true boundary</td><td>Thin or elongated structures</td></tr>
+  <tr class="equation"><td colspan="7">L = Σ D(x)·ŷ(x)</td></tr>
+
+  <tr><td>Hausdorff Loss</td><td>HD Loss</td><td>Largest boundary error</td><td>Tumor edge far off in one spot</td><td>Ruler measures farthest mismatch</td><td>Penalize worst-case contour deviation</td><td>Precise medical contours</td></tr>
+  <tr class="equation"><td colspan="7">L = max_{x∈A} min_{y∈B} d(x,y)</td></tr>
+</table>
+
+<h2>Focal-type Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>Focal Loss</td><td>FL</td><td>Focus on hard pixels</td><td>Small tumor emphasized over background</td><td>Teacher spends more time on weak students</td><td>Penalize easy examples less, hard ones more</td><td>Severe class imbalance</td></tr>
+  <tr class="equation"><td colspan="7">L = - α (1-ŷ)^γ y log(ŷ)</td></tr>
+
+  <tr><td>Tversky Loss</td><td>TL</td><td>Adjustable Dice variant</td><td>Missing tumors penalized more than false alarms</td><td>Exam where missing answers cost more</td><td>Penalize FN vs FP differently</td><td>When recall is critical (e.g. cancer)</td></tr>
+  <tr class="equation"><td colspan="7">L = 1 - (Σ y·ŷ) / (Σ y·ŷ + αFP + βFN)</td></tr>
+</table>
+
+<h2>Advanced Losses</h2>
+<table>
+  <tr><th>Loss Function</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Goal</th><th>Use Case</th></tr>
+  <tr><td>Lovász-Softmax Loss</td><td>LS</td><td>IoU surrogate optimization</td><td>Cityscapes optimized for mIoU</td><td>Training for the exact final score</td><td>Directly minimize IoU surrogate</td><td>Benchmarks where IoU is key</td></tr>
+  <tr class="equation"><td colspan="7">L = Lovász extension of IoU</td></tr>
+
+  <tr><td>Focal Tversky Loss</td><td>FTL</td><td>Focal + Tversky combo</td><td>Rare lesion segmentation</td><td>Hardest important questions emphasized</td><td>Focus on hard false negatives</td><td>Small, rare targets</td></tr>
+  <tr class="equation"><td colspan="7">L = (Tversky Index)^γ</td></tr>
+
+  <tr><td>Surface Loss</td><td>SL</td><td>Boundary distance error in 3D</td><td>Organ surfaces misaligned</td><td>Comparing outlines in 3D models</td><td>Minimize distance between predicted and true surface</td><td>3D organ and medical structures</td></tr>
+  <tr class="equation"><td colspan="7">L = Σ dist(surface_pred, surface_gt)</td></tr>
+</table>
+
+</body>
+</html>
