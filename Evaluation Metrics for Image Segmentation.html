@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Segmentation Metrics Overview</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #222;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    .equation {
+      font-family: "Courier New", monospace;
+      background: #fdfdfd;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Evaluation Metrics for Image Segmentation</h1>
+
+<h2>Semantic Segmentation (Binary)</h2>
+<table>
+  <tr><th>Metric</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Use Case</th></tr>
+  <tr><td>Accuracy</td><td>Acc</td><td>Fraction of correctly labeled pixels</td><td>Model labels most cat and sofa pixels correctly</td><td>Student answers most questions correctly</td><td>Simple and intuitive overall measure</td></tr>
+  <tr class="equation"><td colspan="6">Acc = (TP + TN) / (TP + TN + FP + FN)</td></tr>
+
+  <tr><td>Precision</td><td>P</td><td>Of predicted “cat” pixels, how many are truly cat</td><td>Model wrongly labels sofa as cat</td><td>Doctor gives wrong diagnosis</td><td>Good when false positives are costly</td></tr>
+  <tr class="equation"><td colspan="6">P = TP / (TP + FP)</td></tr>
+
+  <tr><td>Recall</td><td>R</td><td>Of all true cat pixels, how many predicted</td><td>Model misses cat’s tail</td><td>Metal detector misses some coins</td><td>Good when false negatives are costly</td></tr>
+  <tr class="equation"><td colspan="6">R = TP / (TP + FN)</td></tr>
+
+  <tr><td>F1 Score / Dice</td><td>F1 / DSC</td><td>Balance of precision & recall</td><td>Model finds cat but includes sofa pixels</td><td>Balancing accuracy and completeness</td><td>Useful for imbalanced classes</td></tr>
+  <tr class="equation"><td colspan="6">F1 = 2TP / (2TP + FP + FN)</td></tr>
+
+  <tr><td>Intersection over Union</td><td>IoU / Jaccard</td><td>Overlap ÷ total area</td><td>Predicted cat overlaps 80% with true cat</td><td>Two circles overlap 80%</td><td>Standard benchmark for segmentation</td></tr>
+  <tr class="equation"><td colspan="6">IoU = TP / (TP + FP + FN)</td></tr>
+</table>
+
+<h2>Semantic Segmentation (Multi-Class)</h2>
+<table>
+  <tr><th>Metric</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Use Case</th></tr>
+  <tr><td>Pixel Accuracy</td><td>PA</td><td>Overall % pixels correct</td><td>City scene: model labels sky correctly, dominates result</td><td>Exam score inflated by easy questions</td><td>Quick overall measure but biased</td></tr>
+  <tr class="equation"><td colspan="6">PA = Σ TPᵢ / Σ (TPᵢ + FPᵢ + FNᵢ)</td></tr>
+
+  <tr><td>Mean Pixel Accuracy</td><td>mPA</td><td>Accuracy averaged per class</td><td>Small traffic sign accuracy matters equally</td><td>Teacher averages grades across subjects</td><td>Reduces bias from large classes</td></tr>
+  <tr class="equation"><td colspan="6">mPA = (1/N) Σ (TPᵢ / (TPᵢ + FNᵢ))</td></tr>
+
+  <tr><td>Mean IoU</td><td>mIoU</td><td>IoU averaged across classes</td><td>Average IoU of road, car, sky</td><td>Report card with subject averages</td><td>Most widely used segmentation metric</td></tr>
+  <tr class="equation"><td colspan="6">mIoU = (1/N) Σ (TPᵢ / (TPᵢ + FPᵢ + FNᵢ))</td></tr>
+
+  <tr><td>Mean Dice Score</td><td>mDice</td><td>Dice averaged across classes</td><td>Dice score for road, car, sky averaged</td><td>Balanced grading across subjects</td><td>Balances recall and precision across classes</td></tr>
+  <tr class="equation"><td colspan="6">mDice = (1/N) Σ (2TPᵢ / (2TPᵢ + FPᵢ + FNᵢ))</td></tr>
+
+  <tr><td>Frequency Weighted IoU</td><td>FWIoU</td><td>IoU weighted by class size</td><td>Road pixels dominate image so weighted more</td><td>Major subjects count more in GPA</td><td>Reflects impact of frequent classes</td></tr>
+  <tr class="equation"><td colspan="6">FWIoU = (1/Σ nₖ) Σ nᵢ · (TPᵢ / (TPᵢ + FPᵢ + FNᵢ))</td></tr>
+</table>
+
+<h2>Instance Segmentation</h2>
+<table>
+  <tr><th>Metric</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Use Case</th></tr>
+  <tr><td>Average Precision</td><td>AP</td><td>Detecting + segmenting objects</td><td>Street scene: model finds only 2 of 3 cars</td><td>Counting apples but missing one</td><td>Balances precision & recall for objects</td></tr>
+  <tr class="equation"><td colspan="6">AP = ∫₀¹ P(R) dR</td></tr>
+
+  <tr><td>mean Average Precision</td><td>mAP</td><td>AP across IoU thresholds</td><td>Car passes loose overlap but fails strict</td><td>Graded both for correctness and neatness</td><td>Comprehensive object-level evaluation</td></tr>
+  <tr class="equation"><td colspan="6">mAP = (1/T) Σ AP(IoU=t)</td></tr>
+
+  <tr><td>AP_small / AP_medium / AP_large</td><td>AP_S / AP_M / AP_L</td><td>Performance by object size</td><td>Detects big bus but misses tiny sign</td><td>Reads big letters but not small ones</td><td>Reveals sensitivity to object scale</td></tr>
+  <tr class="equation"><td colspan="6">AP formula restricted by object size</td></tr>
+
+  <tr><td>Mask IoU</td><td>Mask IoU</td><td>IoU for each matched mask</td><td>Dog mask overlaps 70% with ground truth</td><td>Two shapes overlap by 70%</td><td>Direct overlap measure for masks</td></tr>
+  <tr class="equation"><td colspan="6">IoU = |M_pred ∩ M_gt| / |M_pred ∪ M_gt|</td></tr>
+
+  <tr><td>Boundary F-measure</td><td>BF</td><td>Quality of edges</td><td>Tumor boundary predicted with blurred edges</td><td>Coloring outside the lines</td><td>Captures contour accuracy</td></tr>
+  <tr class="equation"><td colspan="6">BF = 2 · (P_b · R_b) / (P_b + R_b)</td></tr>
+</table>
+
+<h2>Panoptic Segmentation</h2>
+<table>
+  <tr><th>Metric</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Use Case</th></tr>
+  <tr><td>Panoptic Quality</td><td>PQ</td><td>Overall quality (shape × detection)</td><td>Model finds road and sky but misses a car</td><td>Cooked tasty dish but forgot side item</td><td>Single metric combining segmentation & detection</td></tr>
+  <tr class="equation"><td colspan="6">PQ = Σ IoU(p,g) / (|TP| + 0.5|FP| + 0.5|FN|)</td></tr>
+
+  <tr><td>Segmentation Quality</td><td>SQ</td><td>Accuracy of object shapes</td><td>Car mask slightly smaller than ground truth</td><td>Cookie cutter shape slightly off</td><td>Focuses on mask quality</td></tr>
+  <tr class="equation"><td colspan="6">SQ = Σ IoU(p,g) / |TP|</td></tr>
+
+  <tr><td>Recognition Quality</td><td>RQ</td><td>Correctness of object detection</td><td>Model detects 2 of 3 cars</td><td>2 students present, 1 absent</td><td>Focuses on object detection quality</td></tr>
+  <tr class="equation"><td colspan="6">RQ = |TP| / (|TP| + 0.5|FP| + 0.5|FN|)</td></tr>
+</table>
+
+<h2>Specialized Metrics (Medical & 3D)</h2>
+<table>
+  <tr><th>Metric</th><th>Technical Name</th><th>Meaning</th><th>Example</th><th>Analogy</th><th>Use Case</th></tr>
+  <tr><td>Hausdorff Distance</td><td>HD</td><td>Worst boundary error</td><td>Tumor boundary missed by 5 mm</td><td>Measuring largest gap with ruler</td><td>Highlights worst-case error</td></tr>
+  <tr class="equation"><td colspan="6">HD = max { supₓ∈A infᵧ∈B d(x,y), supᵧ∈B infₓ∈A d(x,y) }</td></tr>
+
+  <tr><td>Average Symmetric Surface Distance</td><td>ASSD</td><td>Average boundary error</td><td>Tumor edges off by ~1 mm</td><td>Average gap between outlines</td><td>Smoother measure than HD</td></tr>
+  <tr class="equation"><td colspan="6">ASSD = (1/|A|+1/|B|) (Σ d(a,B) + Σ d(b,A))</td></tr>
+
+  <tr><td>Volumetric Overlap Error</td><td>VOE</td><td>Overlap error in 3D</td><td>Liver segmentation overlaps 85% with truth</td><td>Two Lego models overlap only partly</td><td>Good for volumetric structures</td></tr>
+  <tr class="equation"><td colspan="6">VOE = 1 - (|A ∩ B| / |A ∪ B|)</td></tr>
+</table>
+
+</body>
+</html>
